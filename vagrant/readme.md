@@ -1,3 +1,9 @@
+# 기본 명령어
+`vagrant up`
+`vagrant ssh-config <serverName>`
+`vagrant ssh <serverName>`
+`vagrant halt`
+
 # vabrant VM 올리기
 1. 필수 플러그인 설치
     ```bash
@@ -63,6 +69,7 @@ $ vagrant ssh jenkins-server
     ```
 
 2. Start Jenkins
+    ### 2.1 yum 으로 설치 후 실행
     ```bash
     #Start jenkins service
     [vagrant@jenkins-server ~]$ service jenkins start
@@ -74,11 +81,24 @@ $ vagrant ssh jenkins-server
     [vagrant@jenkins-server ~]$ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
     ```
 
+    ### 2.3. war 파일로 실행
+    ```bash
+    $ curl -O http://mirrors.jenkins.io/war-stable/latest/jenkins.war
+    $ java -jar jenkins.war
+    ```
+
 3. Accessing Jenkins
 By default jenkins runs al port `8080`, You can access jenkins at
     ```
     http://YOUR-SERVER-PUBLIC-IP:8080
     ```
+
+4. install plugin
+- GitHub Integration: GitHub Integration Plugin for Jenkins
+- GitHub: This plugin integrates GitHub to Jenkins.
+- maven invoker
+- maven Integration
+- Publish Over SSH
 
 # 2. tomcat-server
 ```bash
@@ -118,11 +138,51 @@ localhost:8080
     -->
     ```
 3. tomcat 실행
+    `sudo /opt/tomcat/bin/startup.sh`
     ```bash
     $ cd /opt/tomcat
-    $ sudo ./bin/startup.sh
+    $ sudo ./bin/catalina.sh start #or) $ sudo ./bin/startup.sh
     ```
     - when want to off
         ```bash
         $ ./bin/shutdown.sh
         ```
+    - see logs
+        ```bash
+        $ tail -f ./logs/catalina.out
+        ```
+4. 권한설정
+```bash
+$ find ./ -name context.xml
+./conf/context.xml
+./webapps/host-manager/META-INF/context.xml
+./webapps/manager/META-INF/context.xml
+$ sudo vi ./webapps/manager/META-INF/context.xml
+```
+```
+<Valve className="org.apache.catalina.valves.RemoteAddrValve"
+         allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />
+```
+```
+<!--<Valve className="org.apache.catalina.valves.RemoteAddrValve"
+         allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />-->
+```
+```bash
+$ sudo ./bin/catalina.sh stop
+$ sudo ./bin/catalina.sh start
+```
+
+```bash
+$ vi ./conf/tomcat-users.xml
+```
+
+# 패키지 설치
+jenkins server, apache server
+## git 설치
+```bash
+$ sudo yum install git -y
+```
+# maven 설치
+```bash
+$ sudo yum install maven -y
+```
